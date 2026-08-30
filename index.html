@@ -108,11 +108,19 @@
       <form id="rideRequestForm">
         <div class="form-row">
           <label for="pickup">Pickup</label>
-          <input id="pickup" name="pickup" type="text" placeholder="Enter pickup address or landmark" required />
+          <div class="pickup-row">
+            <input id="pickup" name="pickup" type="text" placeholder="Enter pickup address or landmark" required />
+            <button type="button" id="useLocationBtn" class="btn btn-outline small">Use my location</button>
+          </div>
+          <!-- hidden fields to store coordinates (kept to preserve existing form fields for Supabase) -->
+          <input type="hidden" id="pickupLat" name="pickupLat" />
+          <input type="hidden" id="pickupLon" name="pickupLon" />
         </div>
         <div class="form-row">
           <label for="dropoff">Drop-off</label>
           <input id="dropoff" name="dropoff" type="text" placeholder="Enter destination" required />
+          <input type="hidden" id="dropoffLat" name="dropoffLat" />
+          <input type="hidden" id="dropoffLon" name="dropoffLon" />
         </div>
         <div class="form-row">
           <label for="rideType">Ride type</label>
@@ -129,6 +137,12 @@
         <div class="form-row">
           <label for="notes">Notes (optional)</label>
           <input id="notes" name="notes" type="text" placeholder="Add pickup notes, access info..." />
+        </div>
+
+        <!-- Distance & fare display -->
+        <div id="rideInfo" class="ride-info" aria-live="polite">
+          <div id="distanceDisplay">Distance: —</div>
+          <div id="fareDisplay">Estimated Fare: Rs —</div>
         </div>
 
         <div class="form-actions">
