@@ -850,41 +850,69 @@ a:hover {
 }
 
 @media (max-width: 480px) {
+  /* Make the ride request modal tighter on small phones */
   .ride-modal-panel {
-    margin: 0.5rem;
-    max-width: calc(100% - 1rem);
-    padding: 0.75rem;
+    /* much smaller gutters and reduced overall width to avoid horizontal overflow */
+    margin: 0.125rem;
+    max-width: calc(100% - 0.25rem);
+    padding: 0.35rem;
+    max-height: calc(100vh - 0.5rem);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.20);
+    border-radius: 10px;
   }
 
   .ride-modal-panel h3 {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.1;
+  }
+
+  .ride-modal-panel .form-row {
+    margin-bottom: 0.45rem;
   }
 
   .ride-modal-panel .form-row label {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
+    margin-bottom: 0.2rem;
+    font-weight: 600;
   }
 
   .ride-modal-panel input,
   .ride-modal-panel select,
   .ride-modal-panel textarea {
-    padding: 0.6rem;
-    font-size: 0.95rem;
+    padding: 0.35rem;
+    font-size: 0.88rem;
+    line-height: 1.15;
+    border-radius: 6px;
   }
 
+  /* Reduce input heights and overall vertical spacing */
   .ride-modal-panel .btn {
-    padding: 0.55rem 0.85rem;
-    min-height: 36px;
-    font-size: 0.95rem;
+    padding: 0.35rem 0.6rem;
+    min-height: 30px;
+    font-size: 0.85rem;
+  }
+
+  .ride-modal-panel .btn.small {
+    padding: 0.28rem 0.5rem;
+    min-height: 28px;
+    font-size: 0.78rem;
   }
 
   .ride-modal-panel .ride-info {
-    padding: 0.6rem;
-    font-size: 0.88rem;
-    margin: 0.9rem 0;
+    padding: 0.4rem;
+    font-size: 0.8rem;
+    margin: 0.45rem 0;
   }
 
   .ride-modal-panel .form-actions {
+    margin-top: 0.5rem;
+    gap: 0.25rem;
     flex-direction: column;
-    gap: 0.5rem;
+  }
+
+  /* Ensure modal content doesn't cause horizontal overflow on very small devices */
+  .ride-modal-panel * {
+    box-sizing: border-box;
   }
 }
