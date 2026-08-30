@@ -11,7 +11,7 @@ function setCurrentYear() {
   }
 }
 
-// Modal management
+// Modal management - generic modal
 function openModal(title, message) {
   const modal = document.getElementById('modal');
   const modalTitle = document.getElementById('modal-title');
@@ -31,16 +31,53 @@ function closeModal() {
   }
 }
 
+// Ride request modal management
+function openRideRequestModal() {
+  const rideRequestModal = document.getElementById('rideRequestModal');
+  if (rideRequestModal) {
+    rideRequestModal.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function closeRideRequestModal() {
+  const rideRequestModal = document.getElementById('rideRequestModal');
+  if (rideRequestModal) {
+    rideRequestModal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+// Handle ride request form submission
+function handleRideRequestSubmit(event) {
+  event.preventDefault();
+  
+  const pickup = document.getElementById('pickup').value;
+  const dropoff = document.getElementById('dropoff').value;
+  const rideType = document.getElementById('rideType').value;
+  const passengers = document.getElementById('passengers').value;
+  const notes = document.getElementById('notes').value;
+
+  // Show confirmation modal
+  const message = `Ride requested!\nPickup: ${pickup}\nDropoff: ${dropoff}\nType: ${rideType}\nPassengers: ${passengers}${notes ? '\nNotes: ' + notes : ''}`;
+  openModal('Ride Requested', message);
+  
+  // Reset form and close ride modal
+  const form = document.getElementById('rideRequestForm');
+  if (form) {
+    form.reset();
+  }
+  closeRideRequestModal();
+}
+
 // Button event listeners
 function initializeButtonHandlers() {
   const requestRideBtn = document.getElementById('requestRide');
   const driverBtn = document.getElementById('driverBtn');
   const modalCloseBtn = document.getElementById('modalClose');
+  const rideCancelBtn = document.getElementById('rideCancel');
+  const rideRequestForm = document.getElementById('rideRequestForm');
 
   if (requestRideBtn) {
-    requestRideBtn.addEventListener('click', () => {
-      openModal('Request a Ride', 'Feature coming in the next step.');
-    });
+    requestRideBtn.addEventListener('click', openRideRequestModal);
   }
 
   if (driverBtn) {
@@ -53,6 +90,14 @@ function initializeButtonHandlers() {
     modalCloseBtn.addEventListener('click', closeModal);
   }
 
+  if (rideCancelBtn) {
+    rideCancelBtn.addEventListener('click', closeRideRequestModal);
+  }
+
+  if (rideRequestForm) {
+    rideRequestForm.addEventListener('submit', handleRideRequestSubmit);
+  }
+
   // Close modal when clicking outside the panel
   const modal = document.getElementById('modal');
   if (modal) {
@@ -62,13 +107,24 @@ function initializeButtonHandlers() {
       }
     });
   }
+
+  // Close ride request modal when clicking outside the panel
+  const rideRequestModal = document.getElementById('rideRequestModal');
+  if (rideRequestModal) {
+    rideRequestModal.addEventListener('click', (event) => {
+      if (event.target === rideRequestModal) {
+        closeRideRequestModal();
+      }
+    });
+  }
 }
 
-// Keyboard support for modal
+// Keyboard support for modals
 function initializeKeyboardHandlers() {
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       closeModal();
+      closeRideRequestModal();
     }
   });
 }
