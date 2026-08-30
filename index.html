@@ -101,6 +101,44 @@
     </div>
   </div>
 
+  <!-- Ride request modal -->
+  <div id="rideRequestModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="rideRequestTitle">
+    <div class="modal-panel ride-modal-panel">
+      <h3 id="rideRequestTitle">Request a Ride</h3>
+      <form id="rideRequestForm">
+        <div class="form-row">
+          <label for="pickup">Pickup</label>
+          <input id="pickup" name="pickup" type="text" placeholder="Enter pickup address or landmark" required />
+        </div>
+        <div class="form-row">
+          <label for="dropoff">Drop-off</label>
+          <input id="dropoff" name="dropoff" type="text" placeholder="Enter destination" required />
+        </div>
+        <div class="form-row">
+          <label for="rideType">Ride type</label>
+          <select id="rideType" name="rideType">
+            <option value="standard">Standard</option>
+            <option value="xl">XL</option>
+            <option value="lux">Lux</option>
+          </select>
+        </div>
+        <div class="form-row small-row">
+          <label for="passengers">Passengers</label>
+          <input id="passengers" name="passengers" type="number" min="1" max="6" value="1" />
+        </div>
+        <div class="form-row">
+          <label for="notes">Notes (optional)</label>
+          <input id="notes" name="notes" type="text" placeholder="Add pickup notes, access info..." />
+        </div>
+
+        <div class="form-actions">
+          <button type="button" id="rideCancel" class="btn btn-outline">Cancel</button>
+          <button type="submit" id="rideSubmit" class="btn btn-primary">Request Ride</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="/js/app.js" defer></script>
 </body>
 </html>
