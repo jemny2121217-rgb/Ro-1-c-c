@@ -173,46 +173,165 @@ a:hover {
   padding: 2rem;
 }
 
-/* Buttons */
+/* ============================================================================
+   BUTTON DESIGN SYSTEM
+   Modern, professional, consistent styling for all buttons
+   ============================================================================ */
+
+/* Base button styles */
 .btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
+  /* Layout & sizing */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 1.75rem;
+  min-height: 44px; /* Mobile touch target */
+  
+  /* Typography */
   font-size: 1rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-block;
+  line-height: 1.5;
   text-align: center;
+  white-space: nowrap;
+  
+  /* Appearance */
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  
+  /* Interactions */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Accessibility */
+  position: relative;
+  outline: none;
 }
 
+/* Focus state (keyboard navigation) */
+.btn:focus-visible {
+  outline: 2px solid #0066ff;
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary button */
 .btn-primary {
   background-color: #0066ff;
   color: white;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.16);
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   background-color: #0052cc;
-  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 102, 255, 0.28);
+  transform: translateY(-2px);
 }
 
-.btn-primary:active {
-  transform: scale(0.98);
+.btn-primary:active:not(:disabled) {
+  background-color: #003d99;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.16);
+  transform: translateY(0);
 }
 
+/* Outline button (secondary) */
 .btn-outline {
   background-color: transparent;
   color: #0066ff;
   border: 2px solid #0066ff;
+  box-shadow: none;
+  padding: calc(0.875rem - 2px) calc(1.75rem - 2px); /* Account for border */
 }
 
-.btn-outline:hover {
+.btn-outline:hover:not(:disabled) {
   background-color: #f0f7ff;
-  text-decoration: none;
+  border-color: #0052cc;
+  color: #0052cc;
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.12);
+  transform: translateY(-2px);
 }
 
-.btn-outline:active {
-  transform: scale(0.98);
+.btn-outline:active:not(:disabled) {
+  background-color: #e6eeff;
+  border-color: #003d99;
+  color: #003d99;
+  box-shadow: none;
+  transform: translateY(0);
+}
+
+/* Small button variant */
+.btn.small {
+  padding: 0.5rem 1rem;
+  min-height: 36px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.btn.small.btn-primary {
+  box-shadow: 0 1px 4px rgba(0, 102, 255, 0.12);
+}
+
+.btn.small.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.20);
+}
+
+.btn.small.btn-outline {
+  padding: calc(0.5rem - 2px) calc(1rem - 2px);
+}
+
+/* Large button variant */
+.btn.large {
+  padding: 1rem 2rem;
+  min-height: 48px;
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.btn.large.btn-primary {
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.20);
+}
+
+.btn.large.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 8px 24px rgba(0, 102, 255, 0.32);
+}
+
+.btn.large.btn-outline {
+  padding: calc(1rem - 2px) calc(2rem - 2px);
+}
+
+/* Full-width button */
+.btn.full-width {
+  width: 100%;
+}
+
+/* Loading state (optional utility class) */
+.btn.loading:not(:disabled) {
+  color: transparent;
+  pointer-events: none;
+}
+
+.btn.loading::after {
+  content: '';
+  position: absolute;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.6s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Features section */
@@ -356,11 +475,11 @@ a:hover {
 
 .modal-panel {
   background-color: white;
-  border-radius: 12px;
-  padding: 2rem;
-  max-width: 400px;
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 420px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease;
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes slideUp {
@@ -376,17 +495,113 @@ a:hover {
 
 .modal-panel h3 {
   margin-bottom: 1rem;
+  font-size: 1.375rem;
+  color: #000;
 }
 
 .modal-panel p {
   color: #666;
   margin-bottom: 2rem;
+  line-height: 1.6;
 }
 
 .modal-actions {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
+}
+
+/* Form elements in modals */
+.modal-panel input,
+.modal-panel select,
+.modal-panel textarea {
+  width: 100%;
+  padding: 0.875rem;
+  font-size: 1rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.modal-panel input:focus,
+.modal-panel select:focus,
+.modal-panel textarea:focus {
+  outline: none;
+  border-color: #0066ff;
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+/* Form rows in ride request modal */
+.form-row {
+  margin-bottom: 1.5rem;
+}
+
+.form-row label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.form-row.small-row {
+  margin-bottom: 1rem;
+}
+
+.pickup-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.pickup-row input {
+  flex: 1;
+}
+
+/* Ride info display */
+.ride-info {
+  background-color: #f9f9f9;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.ride-info > div {
+  margin-bottom: 0.5rem;
+}
+
+.ride-info > div:last-child {
+  margin-bottom: 0;
+}
+
+/* Form actions */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: flex-end;
+}
+
+.form-actions .btn {
+  flex: 1;
+  min-width: 120px;
+}
+
+.form-actions .btn-primary {
+  order: 2;
+}
+
+.form-actions .btn-outline {
+  order: 1;
+}
+
+/* Modal ride panel */
+.ride-modal-panel {
+  max-width: 500px;
 }
 
 /* Responsive design */
@@ -458,6 +673,44 @@ a:hover {
     height: 2.5rem;
     font-size: 1rem;
   }
+
+  /* Modal responsive */
+  .modal-panel {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+    padding: 2rem;
+  }
+
+  .form-row {
+    margin-bottom: 1.25rem;
+  }
+
+  .pickup-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pickup-row input,
+  .pickup-row button {
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    justify-content: stretch;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -485,9 +738,24 @@ a:hover {
     font-size: 1rem;
   }
 
+  /* Button sizing for mobile */
   .btn {
-    padding: 0.65rem 1.25rem;
+    padding: 0.75rem 1.25rem;
+    min-height: 44px;
     font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .btn.small {
+    padding: 0.5rem 0.875rem;
+    min-height: 36px;
+    font-size: 0.875rem;
+  }
+
+  .btn.large {
+    padding: 0.875rem 1.5rem;
+    min-height: 44px;
+    font-size: 1rem;
   }
 
   .main-nav {
@@ -501,5 +769,19 @@ a:hover {
 
   .modal-panel {
     margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .modal-panel h3 {
+    font-size: 1.125rem;
+  }
+
+  .form-row label {
+    font-size: 0.9rem;
+  }
+
+  .ride-info {
+    font-size: 0.9rem;
+    padding: 0.875rem;
   }
 }
