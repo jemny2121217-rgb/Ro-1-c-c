@@ -1,1 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rydo — Move your way.</title>
+  <meta name="description" content="Rydo — Move your way. A modern, professional ride-booking platform." />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#" aria-label="Rydo homepage">
+        <svg class="brand-mark" width="40" height="40" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0%" stop-color="#0066ff"/>
+              <stop offset="100%" stop-color="#00d4ff"/>
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="45" fill="url(#g1)" />
+          <path d="M30 60 L40 40 L60 40 L70 60 Z" fill="white" opacity="0.95" />
+        </svg>
+        <span class="brand-name">Rydo</span>
+      </a>
+      <nav class="main-nav" aria-label="Primary">
+        <a class="nav-link" href="#features">Features</a>
+        <a class="nav-link" href="#how-it-works">How it works</a>
+        <a class="nav-link" href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
 
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <h1 class="hero-title">Move your way.</h1>
+          <p class="hero-sub">Safe, reliable rides — whenever and wherever you need them. Built for passengers and drivers who value simplicity and trust.</p>
+          <div class="cta-row">
+            <button id="requestRide" class="btn btn-primary">Request a Ride</button>
+            <button id="driverBtn" class="btn btn-outline">Driver</button>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="phone-mock">
+            <div class="phone-screen">
+              <div class="map-placeholder">Map preview coming soon</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="features container">
+      <h2>Why choose Rydo?</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <h3>Reliable rides</h3>
+          <p>Connect with vetted drivers and get where you need to go on time.</p>
+        </div>
+        <div class="feature">
+          <h3>Driver-friendly</h3>
+          <p>Flexible schedules, transparent fares, and helpful tools for drivers.</p>
+        </div>
+        <div class="feature">
+          <h3>Secure</h3>
+          <p>We prioritize safety and trust across every ride.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="how container">
+      <h2>How it works</h2>
+      <ol>
+        <li>Request a ride with a tap.</li>
+        <li>Get matched with a nearby driver.</li>
+        <li>Ride safely to your destination.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>© <span id="year"></span> Rydo — Move your way.</div>
+      <div class="footer-links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Simple modal for button feedback -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-panel">
+      <h3 id="modal-title">Coming soon</h3>
+      <p id="modal-message">Feature coming in the next step.</p>
+      <div class="modal-actions">
+        <button id="modalClose" class="btn btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js" defer></script>
+</body>
+</html>
