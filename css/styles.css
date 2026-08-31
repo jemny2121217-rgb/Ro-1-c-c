@@ -916,3 +916,81 @@ a:hover {
     box-sizing: border-box;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Mapbox / Map container styles
+   - Ensure the map is responsive on desktop/tablet
+   - Fit inside small phones with no horizontal overflow
+   - Reduce height on narrow phones to ~220px
+   - Keep styling scoped to common map container selectors so functionality isn't affected
+   --------------------------------------------------------------------------- */
+
+/* Base map sizing — responsive by default */
+.map-container,
+.map,
+#map,
+.mapbox-map,
+.mapboxgl-map {
+  width: 100%;           /* always fit parent/container */
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  overflow: hidden;      /* prevent internal overflow from creating horizontal scroll */
+  border-radius: 12px;
+  height: 420px;         /* comfortable default for desktop */
+  min-height: 200px;
+}
+
+/* Tablet adjustment — slightly shorter to balance layout */
+@media (max-width: 1024px) {
+  .map-container,
+  .map,
+  #map,
+  .mapbox-map,
+  .mapboxgl-map {
+    height: 360px;
+  }
+}
+
+@media (max-width: 768px) {
+  .map-container,
+  .map,
+  #map,
+  .mapbox-map,
+  .mapboxgl-map {
+    height: 300px;
+  }
+}
+
+/* Phones: target 480px and below — make map compact and avoid horizontal overflow */
+@media (max-width: 480px) {
+  .map-container,
+  .map,
+  #map,
+  .mapbox-map,
+  .mapboxgl-map {
+    height: 220px;       /* requested small-phone height */
+    margin: 0 auto;
+    padding: 0;
+    border-radius: 10px;
+    max-width: 100vw;    /* ensure it can't exceed viewport width */
+    overflow: hidden;
+  }
+
+  /* Prevent mapbox control containers from forcing horizontal scroll on very small screens */
+  .map-container .mapboxgl-control-container,
+  .map .mapboxgl-control-container,
+  #map .mapboxgl-control-container,
+  .mapboxgl-map .mapboxgl-control-container {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Ensure the internal canvas respects container width */
+  .mapboxgl-canvas {
+    max-width: 100%;
+    width: 100% !important;
+    height: 100% !important;
+    box-sizing: border-box;
+  }
+}
