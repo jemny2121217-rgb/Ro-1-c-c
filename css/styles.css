@@ -784,6 +784,15 @@ a:hover {
     font-size: 0.9rem;
     padding: 0.875rem;
   }
+
+  /* Make the map placeholder smaller on very small phones */
+  .map-placeholder {
+    height: 150px;
+    min-height: 0;
+    padding: 0.5rem;
+    width: 100%;
+    overflow: hidden;
+  }
 }
 
 /* ---------------------------------------------------------------------------
