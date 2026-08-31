@@ -116,7 +116,8 @@ let supabaseAnonKey = "sb_publishable_UX9JBrTM51l4KnHdd-_3KQ_Ux9WB_dJ";
     let lastFetchedRides = [];
     let selectedRideId = null;
     let acceptedRideId = null;
-
+window.__SUPABASE_URL = supabaseUrl;
+window.__SUPABASE_ANON_KEY = supabaseAnonKey;
     // Supabase client (minimal implementation)
     const supabase = {
       async query(table, filters = {}) {
