@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Driver Portal — Rydo</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body { font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:#f7f9fc; color:#222; }
+    .container { max-width:1100px; margin:20px auto; padding:16px; }
+    header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    h1 { font-size:20px; color:#0066ff; }
+    .panel { background:white; padding:14px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06); margin-bottom:16px; }
+    .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    label { font-size:13px; color:#444; }
+    input[type="text"], select, input[type="number"] { padding:8px 10px; border:1px solid #ddd; border-radius:6px; }
+    button.btn { background:#0066ff; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+    button.ghost { background:transparent; border:1px solid #ddd; color:#333; }
+    .ride-list { display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+    .ride-card { border-left:4px solid #0066ff; background:#f9fbff; padding:10px; border-radius:6px; display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+    .ride-meta { font-size:13px; }
+    .actions { display:flex; gap:8px; }
+    .btn-accept { background:#28a745; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
+    .btn-disabled { opacity:0.6; cursor:not-allowed; }
+    .tracking { margin-top:12px; display:grid; grid-template-columns:1fr 320px; gap:12px; align-items:start; }
+    .map-placeholder { min-height:220px; background:#e9eef8; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#556; font-size:14px; padding:12px; }
+    .history { margin-top:12px; }
+    .stat { font-weight:600; }
+    .small { font-size:13px; color:#666; }
+    .note { margin-top:8px; font-size:13px; color:#666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Driver Portal</h1>
+      <div class="small">Driver-only interface — Accept rides, track passengers, and complete rides.</div>
+    </header>
+
+    <section class="panel" id="setupPanel">
+      <div class="row">
+        <div>
+          <label for="driverId">Driver ID</label><br/>
+          <input id="driverId" type="number" min="1" placeholder="Enter your numeric driver id" />
+        </div>
+
+        <div>
+          <label for="driverVehicle">Vehicle type</label><br/>
+          <select id="driverVehicle">
+            <option value="car">Car</option>
+            <option value="bike">Bike</option>
+            <option value="tuktuk">Tuk Tuk</option>
+          </select>
+        </div>
+
+        <div style="align-self:end;">
+          <button id="startPortalBtn" class="btn">Start Portal</button>
+        </div>
+      </div>
+
+      <p class="note">
+        The portal uses the runtime configuration variables <code>window.__SUPABASE_URL</code> and <code>window.__SUPABASE_ANON_KEY</code>.
+        Set them in the console before clicking Start Portal if not already set. Do NOT use a service-role key.
+      </p>
+    </section>
+
+    <section class="panel" id="pendingPanel" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong>Pending rides</strong>
+          <div class="small" id="pendingSubtitle">Showing rides for vehicle: <span id="currentVehicleLabel"></span></div>
+        </div>
+        <div class="row">
+          <button id="refreshBtn" class="ghost">Refresh</button>
+          <button id="pollToggleBtn" class="ghost">Enable Polling</button>
+        </div>
+      </div>
+
+      <div class="ride-list" id="rideList">
+        <!-- ride cards inserted here -->
+      </div>
+    </section>
+
+    <section class="panel" id="activePanel" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong>Active ride</strong>
+          <div class="small" id="activeRideIdLabel"></div>
+        </div>
+        <div class="row">
+          <div class="small">Status: <span id="activeStatus" class="stat"></span></div>
+        </div>
+      </div>
+
+      <div class="tracking" id="trackingArea">
+        <div>
+          <div class="ride-meta" id="activeRideDetails"></div>
+
+          <div style="margin-top:12px;" id="driverControls">
+            <div class="row">
+              <button id="arrivingBtn" class="btn ghost" disabled>Arriving</button>
+              <button id="startRideBtn" class="btn" disabled>Start Ride</button>
+              <button id="completeRideBtn" class="btn" style="background:#28a745" disabled>Complete Ride</button>
+            </div>
+            <div class="note">Only passenger can cancel. No Reject or Cancel for driver.</div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <strong>Navigation</strong>
+            <div class="small">Open native navigation to pickup or dropoff. Uses available coordinates if present.</div>
+            <div style="margin-top:8px;">
+              <button id="navToPickupBtn" class="ghost" disabled>Navigate to pickup</button>
+              <button id="navToDropoffBtn" class="ghost" disabled>Navigate to dropoff</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="map-placeholder" id="mapBox">Driver location and passenger tracking map</div>
+          <div style="margin-top:10px;">
+            <div><strong>Your location:</strong> <span id="driverLocationLabel">—</span></div>
+            <div><strong>Passenger location:</strong> <span id="passengerLocationLabel">—</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="historyPanel" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div><strong>Ride history & Earnings</strong></div>
+        <div>
+          <div class="small">Total earnings: Rs <span id="totalEarnings">0</span></div>
+        </div>
+      </div>
+
+      <div class="history" id="historyList"></div>
+    </section>
+
+    <footer style="margin-top:10px;" class="small">
+      driver-portal-test.html retained as a test suite. This portal uses REST calls to the project's Supabase REST endpoint and respects RLS. Do NOT use a service role key.
+    </footer>
+  </div>
+
+  <script src="js/driver.js" defer></script>
+</body>
+</html>
