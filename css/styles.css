@@ -969,12 +969,15 @@ a:hover {
   #map,
   .mapbox-map,
   .mapboxgl-map {
-    height: 220px;       /* requested small-phone height */
+    height: 150px !important;       /* reduced small-phone height to fit better */
+    width: 100% !important;         /* ensure full-width on very small screens */
     margin: 0 auto;
     padding: 0;
     border-radius: 10px;
     max-width: 100vw;    /* ensure it can't exceed viewport width */
     overflow: hidden;
+    overflow-x: hidden;  /* explicitly prevent horizontal overflow */
+    box-sizing: border-box;
   }
 
   /* Prevent mapbox control containers from forcing horizontal scroll on very small screens */
