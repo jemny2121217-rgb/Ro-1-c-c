@@ -229,7 +229,7 @@ function handleRideRequestSubmit(event) {
 
     // Show confirmation modal (keeps previous behavior)
     const message =
-      `Ride requested!\nPickup: ${pickup}\nDropoff: ${dropoff}\nType: ${rideType}\nPassengers: ${passengers}${notes ? '\nNotes: ' + notes : ''}\nDistance: ${distance} km\nEstimated Fare: Rs ${far[...]
+      `Ride requested!\nPickup: ${pickup}\nDropoff: ${dropoff}\nType: ${rideType}\nPassengers: ${passengers}${notes ? '\nNotes: ' + notes : ''}\nDistance: ${distance} km\nEstimated Fare: Rs ${fare}`;
     openModal('Ride Requested', message);
 
     // Note: original code resets the form. Keep that behavior to avoid breaking existing flows.
@@ -259,7 +259,7 @@ function initializeButtonHandlers() {
   if (driverBtn) {
     driverBtn.addEventListener('click', () => {
       // Navigate to the Driver Portal page in the same tab
-      window.location.href = 'driver-portal-test.html';
+      window.location.href = 'driver-portal.html';
     });
   }
 
