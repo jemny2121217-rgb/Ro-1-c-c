@@ -793,6 +793,19 @@ a:hover {
     width: 100%;
     overflow: hidden;
   }
+
+  /* Compact phone mock on very small screens to avoid tall aspect-ratio */
+  .phone-mock {
+    width: 100%;
+    max-width: 150px;
+    height: 180px;
+    aspect-ratio: auto;
+    margin: 0 auto;
+  }
+
+  .phone-screen {
+    height: 100%;
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -998,11 +1011,9 @@ a:hover {
     box-sizing: border-box;
   }
 
-  /* Ensure the internal canvas respects container width */
-  .mapboxgl-canvas {
-    max-width: 100%;
-    width: 100% !important;
-    height: 100% !important;
+  /* Ensure mapbox controls don't cause overflow for the map placeholder */
+  .map-placeholder {
     box-sizing: border-box;
   }
-}
+
+[...]
