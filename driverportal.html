@@ -3,9 +3,698 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Driver Portal</title>
+  <title>Rydo Driver Portal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    .container {
+      max-width: 100%;
+      width: 100%;
+      padding: 12px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left h1 {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .status-text {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .toggle-btn {
+      padding: 6px 12px;
+      border: 2px solid white;
+      background: transparent;
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .toggle-btn.active {
+      background: white;
+      color: #0066ff;
+    }
+
+    .toggle-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Summary Box */
+    .summary-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .summary-card {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .summary-card-label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .summary-card-value {
+      font-size: 22px;
+      font-weight: bold;
+      color: #0066ff;
+    }
+
+    /* Offline Message */
+    .offline-message {
+      background: #fff3cd;
+      color: #856404;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .offline-message.show {
+      display: block;
+    }
+
+    /* Section Title */
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin: 12px 0 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Ride Request Cards */
+    .ride-requests {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .ride-card {
+      background: white;
+      border-left: 4px solid #0066ff;
+      padding: 12px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .ride-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .ride-locations {
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .pickup-location {
+      font-weight: 600;
+      color: #0066ff;
+      margin-bottom: 2px;
+    }
+
+    .destination {
+      color: #666;
+      font-size: 12px;
+    }
+
+    .destination:before {
+      content: "→ ";
+      color: #999;
+    }
+
+    .ride-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
+      margin-bottom: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #eee;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-label {
+      color: #999;
+      font-size: 11px;
+    }
+
+    .detail-value {
+      color: #333;
+      font-weight: 600;
+    }
+
+    .ride-fare {
+      font-size: 14px;
+      font-weight: 700;
+      color: #28a745;
+    }
+
+    .btn-accept {
+      width: 100%;
+      padding: 10px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-accept:hover {
+      background: #218838;
+    }
+
+    .btn-accept:active {
+      transform: scale(0.98);
+    }
+
+    /* Active Ride Section */
+    .active-ride {
+      background: white;
+      border-left: 4px solid #28a745;
+      padding: 12px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      margin-bottom: 12px;
+    }
+
+    .active-ride-status {
+      font-size: 12px;
+      color: #28a745;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .pickup-highlight {
+      background: #f0f8ff;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      border-left: 3px solid #0066ff;
+    }
+
+    .pickup-label {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pickup-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0066ff;
+      margin-top: 4px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: #0066ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 8px;
+    }
+
+    .btn-primary:hover {
+      background: #0052cc;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    /* Payment Received */
+    .payment-section {
+      background: #e8f5e9;
+      border-left: 4px solid #28a745;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .payment-status {
+      font-size: 12px;
+      color: #28a745;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .payment-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .payment-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .payment-label {
+      color: #666;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .payment-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #28a745;
+      margin-top: 3px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 30px 12px;
+      color: #999;
+    }
+
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .empty-state-text {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px;
+      }
+
+      .header {
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .header-left h1 {
+        font-size: 16px;
+      }
+
+      .toggle-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- Driver Portal V1 - To be built -->
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <h1>🚗 Rydo Driver</h1>
+        <div class="status-text" id="statusText">You are Offline</div>
+      </div>
+      <div class="toggle-group">
+        <button class="toggle-btn" id="offlineBtn" onclick="setOffline()">Offline</button>
+        <button class="toggle-btn active" id="onlineBtn" onclick="setOnline()">Online</button>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-box">
+      <div class="summary-card">
+        <div class="summary-card-label">Today's Earnings</div>
+        <div class="summary-card-value" id="todayEarnings">Rs 0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-card-label">Completed Rides</div>
+        <div class="summary-card-value" id="completedCount">0</div>
+      </div>
+    </div>
+
+    <!-- Offline Message -->
+    <div class="offline-message" id="offlineMessage">
+      ⛔ You are Offline. Go Online to receive ride requests.
+    </div>
+
+    <!-- Ride Requests Section -->
+    <div id="requestsSection">
+      <div class="section-title">Available Requests</div>
+      <div class="ride-requests" id="rideRequests"></div>
+    </div>
+
+    <!-- Active Ride Section -->
+    <div id="activeRideSection" class="hidden">
+      <div class="section-title">Active Ride</div>
+      <div class="active-ride" id="activeRideCard"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state hidden">
+      <div class="empty-state-icon">📍</div>
+      <div class="empty-state-text">No ride requests available<br>Check back soon!</div>
+    </div>
+  </div>
+
+  <script>
+    // State Management
+    let driverState = {
+      isOnline: true,
+      todayEarnings: 0,
+      completedRides: 0,
+      activeRide: null,
+      rideRequests: []
+    };
+
+    // Demo Ride Data
+    const demoRides = [
+      {
+        id: 1,
+        pickup: "Pokhara Lakeside",
+        destination: "Pokhara Airport",
+        distance: "5 km",
+        vehicle: "Bike",
+        fare: 95,
+        status: "requested"
+      },
+      {
+        id: 2,
+        pickup: "Kathmandu City Center",
+        destination: "Tribhuvan International Airport",
+        distance: "12 km",
+        vehicle: "Car",
+        fare: 450,
+        status: "requested"
+      },
+      {
+        id: 3,
+        pickup: "Bhaktapur Durbar Square",
+        destination: "Kathmandu Medical College",
+        distance: "8 km",
+        vehicle: "Bike",
+        fare: 180,
+        status: "requested"
+      },
+      {
+        id: 4,
+        pickup: "Patan Shopping Mall",
+        destination: "Baneswor",
+        distance: "4 km",
+        vehicle: "Bike",
+        fare: 75,
+        status: "requested"
+      }
+    ];
+
+    // Initialize
+    function init() {
+      driverState.rideRequests = [...demoRides];
+      updateUI();
+    }
+
+    // Toggle Online/Offline
+    function setOnline() {
+      driverState.isOnline = true;
+      document.getElementById("onlineBtn").classList.add("active");
+      document.getElementById("offlineBtn").classList.remove("active");
+      document.getElementById("statusText").textContent = "You are Online";
+      document.getElementById("offlineMessage").classList.remove("show");
+      document.getElementById("requestsSection").classList.remove("hidden");
+      document.getElementById("emptyState").classList.add("hidden");
+      updateUI();
+    }
+
+    function setOffline() {
+      driverState.isOnline = false;
+      document.getElementById("onlineBtn").classList.remove("active");
+      document.getElementById("offlineBtn").classList.add("active");
+      document.getElementById("statusText").textContent = "You are Offline";
+      document.getElementById("offlineMessage").classList.add("show");
+      document.getElementById("requestsSection").classList.add("hidden");
+      if (!driverState.activeRide) {
+        document.getElementById("emptyState").classList.add("hidden");
+      }
+      updateUI();
+    }
+
+    // Accept Ride
+    function acceptRide(rideId) {
+      const ride = driverState.rideRequests.find(r => r.id === rideId);
+      if (ride) {
+        driverState.activeRide = {
+          ...ride,
+          status: "accepted",
+          acceptedTime: new Date()
+        };
+        driverState.rideRequests = driverState.rideRequests.filter(r => r.id !== rideId);
+        updateUI();
+      }
+    }
+
+    // Start Ride
+    function startRide() {
+      if (driverState.activeRide) {
+        driverState.activeRide.status = "in_progress";
+        updateUI();
+      }
+    }
+
+    // Complete Ride
+    function completeRide() {
+      if (driverState.activeRide) {
+        const earnings = driverState.activeRide.fare * 0.85; // 85% to driver, 15% platform fee
+        driverState.todayEarnings += earnings;
+        driverState.completedRides += 1;
+        driverState.activeRide.status = "completed";
+        driverState.activeRide.earnings = earnings;
+        updateUI();
+      }
+    }
+
+    // Acknowledge Completion
+    function acknowledgeCompletion() {
+      driverState.activeRide = null;
+      if (driverState.isOnline) {
+        document.getElementById("requestsSection").classList.remove("hidden");
+        if (driverState.rideRequests.length === 0) {
+          document.getElementById("emptyState").classList.remove("hidden");
+        }
+      }
+      updateUI();
+    }
+
+    // Update UI
+    function updateUI() {
+      updateSummary();
+      updateRideRequests();
+      updateActiveRide();
+    }
+
+    function updateSummary() {
+      document.getElementById("todayEarnings").textContent = `Rs ${Math.round(driverState.todayEarnings)}`;
+      document.getElementById("completedCount").textContent = driverState.completedRides;
+    }
+
+    function updateRideRequests() {
+      const container = document.getElementById("rideRequests");
+      container.innerHTML = "";
+
+      if (!driverState.isOnline || driverState.rideRequests.length === 0) {
+        if (driverState.isOnline && !driverState.activeRide) {
+          document.getElementById("emptyState").classList.remove("hidden");
+        }
+        return;
+      }
+
+      document.getElementById("emptyState").classList.add("hidden");
+
+      driverState.rideRequests.forEach(ride => {
+        const card = document.createElement("div");
+        card.className = "ride-card";
+        card.innerHTML = `
+          <div class="ride-locations">
+            <div class="pickup-location">${ride.pickup}</div>
+            <div class="destination">${ride.destination}</div>
+          </div>
+          <div class="ride-details">
+            <div class="detail-item">
+              <div class="detail-label">Distance</div>
+              <div class="detail-value">${ride.distance}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Vehicle</div>
+              <div class="detail-value">${ride.vehicle}</div>
+            </div>
+          </div>
+          <div class="ride-fare">Rs ${ride.fare}</div>
+          <button class="btn-accept" onclick="acceptRide(${ride.id})">Accept Ride</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updateActiveRide() {
+      const section = document.getElementById("activeRideSection");
+      const card = document.getElementById("activeRideCard");
+
+      if (!driverState.activeRide) {
+        section.classList.add("hidden");
+        return;
+      }
+
+      section.classList.remove("hidden");
+      const ride = driverState.activeRide;
+
+      if (ride.status === "accepted") {
+        card.innerHTML = `
+          <div class="active-ride-status">🟢 Ride Accepted</div>
+          <div class="pickup-highlight">
+            <div class="pickup-label">Passenger Pickup Location</div>
+            <div class="pickup-text">${ride.pickup}</div>
+          </div>
+          <div class="ride-details">
+            <div class="detail-item">
+              <div class="detail-label">Destination</div>
+              <div class="detail-value">${ride.destination}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Distance</div>
+              <div class="detail-value">${ride.distance}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Vehicle</div>
+              <div class="detail-value">${ride.vehicle}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Fare</div>
+              <div class="detail-value">Rs ${ride.fare}</div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="startRide()">Start Ride</button>
+        `;
+      } else if (ride.status === "in_progress") {
+        card.innerHTML = `
+          <div class="active-ride-status">🚗 Ride in Progress</div>
+          <div class="pickup-highlight">
+            <div class="pickup-label">Going To</div>
+            <div class="pickup-text">${ride.destination}</div>
+          </div>
+          <div class="ride-details">
+            <div class="detail-item">
+              <div class="detail-label">From</div>
+              <div class="detail-value">${ride.pickup}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Distance</div>
+              <div class="detail-value">${ride.distance}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Fare</div>
+              <div class="detail-value">Rs ${ride.fare}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Vehicle</div>
+              <div class="detail-value">${ride.vehicle}</div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="completeRide()">Complete Ride</button>
+        `;
+      } else if (ride.status === "completed") {
+        const earnings = ride.earnings || 0;
+        card.innerHTML = `
+          <div class="payment-section">
+            <div class="payment-status">✅ Payment Received</div>
+            <div class="payment-details">
+              <div class="payment-item">
+                <div class="payment-label">Payment Method</div>
+                <div class="payment-value">Online</div>
+              </div>
+              <div class="payment-item">
+                <div class="payment-label">Fare Paid</div>
+                <div class="payment-value">Rs ${ride.fare}</div>
+              </div>
+              <div class="payment-item">
+                <div class="payment-label">Your Earnings</div>
+                <div class="payment-value">Rs ${Math.round(earnings)}</div>
+              </div>
+              <div class="payment-item">
+                <div class="payment-label">Platform Fee</div>
+                <div class="payment-value">Rs ${Math.round(ride.fare * 0.15)}</div>
+              </div>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="acknowledgeCompletion()">Next Ride</button>
+        `;
+      }
+    }
+
+    // Start the app
+    init();
+  </script>
 </body>
 </html>
