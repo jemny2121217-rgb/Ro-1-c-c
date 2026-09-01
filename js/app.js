@@ -259,7 +259,7 @@ function initializeButtonHandlers() {
   if (driverBtn) {
     driverBtn.addEventListener('click', () => {
       // Navigate to the Driver Portal page in the same tab
-      window.location.href = 'driver-portal-test.html';
+      window.location.href = 'driverportal.html';
     });
   }
 
