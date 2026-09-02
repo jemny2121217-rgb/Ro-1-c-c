@@ -15,6 +15,7 @@
       --surface:#f7f9fc;
     }
     body{background:var(--surface);}
+    .hidden{display:none !important}
     .admin-app{display:flex;min-height:100vh}
     /* Sidebar */
     .sidebar{width:260px;background:#0f1724;color:#fff;padding:16px;flex-shrink:0}
@@ -265,12 +266,12 @@
       <div id="view-settings" class="hidden">
         <div class="panel">
           <h3>Supabase Configuration</h3>
-          <p style="font-size:13px;color:var(--muted)">Enter your Supabase URL and anon/public key. Do NOT use a service_role (secret) key on the frontend. See comments in js/admin.js for recommended secure auth & role checks.</p>
+          <p style="font-size:13px;color:var(--muted)">Enter your Supabase URL and anon/public key. Do NOT use a service_role (secret) key on the frontend. See comments in js/admin.js for recommended [...]
           <div class="form-row"><label>Supabase URL</label><input id="sbUrl" type="text" placeholder="https://xyz.supabase.co" /></div>
           <div class="form-row"><label>Supabase Anon Key</label><input id="sbKey" type="text" placeholder="public-anon-key" /></div>
           <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="btnConnectSB">Connect</button><button class="btn ghost" id="btnClearSB">Clear</button></div>
           <div style="margin-top:12px;font-size:13px;color:var(--muted)">
-            <strong>Admin auth:</strong> This panel shows the UI for admin sign-in, but you must implement server-side role checks/RLS before allowing writes in production. Add Supabase Auth and verify user's admin role on the server.
+            <strong>Admin auth:</strong> This panel shows the UI for admin sign-in, but you must implement server-side role checks/RLS before allowing writes in production. Add Supabase Auth and verif[...]
           </div>
         </div>
       </div>
