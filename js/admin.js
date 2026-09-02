@@ -72,8 +72,17 @@ function setupEventListeners() {
   document.getElementById('previewVehicle')?.addEventListener('change', updateFarePreview);
   document.getElementById('previewDistance')?.addEventListener('input', updateFarePreview);
 
-  // Supabase settings
-  document.getElementById('btnConnectSB')?.addEventListener('click', connectSupabase);
+  // Supabase settings - FIX: wrap in arrow function to preserve async behavior
+  const connectBtn = document.getElementById('btnConnectSB');
+  if (connectBtn) {
+    connectBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      connectSupabase().catch(err => {
+        console.error('Unexpected error in connectSupabase:', err);
+        showMessage('Unexpected error: ' + err.message, 'error');
+      });
+    });
+  }
   document.getElementById('btnClearSB')?.addEventListener('click', clearSupabaseConfig);
 }
 
@@ -146,7 +155,11 @@ function loadSupabaseConfig() {
   if (url && key) {
     document.getElementById('sbUrl').value = url;
     document.getElementById('sbKey').value = key;
-    verifySupabaseConnection(url, key);
+    // Call async function without awaiting at top level
+    // It will run in background and update status when done
+    verifySupabaseConnection(url, key).catch(err => {
+      console.error('Error verifying stored Supabase config:', err);
+    });
   }
 }
 
