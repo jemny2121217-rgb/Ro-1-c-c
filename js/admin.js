@@ -146,24 +146,39 @@ function loadSupabaseConfig() {
   if (url && key) {
     document.getElementById('sbUrl').value = url;
     document.getElementById('sbKey').value = key;
-    initSupabase(url, key);
+    verifySupabaseConnection(url, key);
   }
 }
 
-function initSupabase(url, key) {
+async function verifySupabaseConnection(url, key) {
   try {
-    supabase = createClient(url, key);
+    // Create a temporary client to test the connection
+    const testClient = createClient(url, key);
+    
+    // Perform a harmless read query to verify actual database access
+    // Query any table that's expected to exist (rides table is used throughout)
+    const { error } = await testClient
+      .from('rides')
+      .select('count', { count: 'exact', head: true });
+
+    if (error) {
+      throw error;
+    }
+
+    // Only if query succeeds, set the global client and mark as connected
+    supabase = testClient;
     document.getElementById('sbStatus').textContent = 'Connected';
-    showMessage('Supabase connected!', 'success');
+    showMessage('Supabase connected and verified!', 'success');
     return true;
   } catch (error) {
-    document.getElementById('sbStatus').textContent = 'Error';
-    showMessage('Invalid Supabase credentials', 'error');
+    document.getElementById('sbStatus').textContent = 'Connection failed';
+    showMessage('Connection failed: ' + (error.message || 'Unknown error'), 'error');
+    supabase = null;
     return false;
   }
 }
 
-function connectSupabase() {
+async function connectSupabase() {
   const url = document.getElementById('sbUrl').value.trim();
   const key = document.getElementById('sbKey').value.trim();
 
@@ -172,7 +187,8 @@ function connectSupabase() {
     return;
   }
 
-  if (initSupabase(url, key)) {
+  if (await verifySupabaseConnection(url, key)) {
+    // Only save credentials if connection is verified
     localStorage.setItem('sbUrl', url);
     localStorage.setItem('sbKey', key);
   }
