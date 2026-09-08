@@ -1,1 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Dashboard</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --primary: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #e5e7eb;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .dashboard {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .3s;
+      border-radius: 26px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--success);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: opacity 0.2s;
+    }
+
+    .btn:disabled {
+      background-color: #9ca3af !important;
+      cursor: not-allowed;
+    }
+
+    .btn-primary { background-color: var(--primary); }
+    .btn-success { background-color: var(--success); }
+    .btn-danger { background-color: var(--danger); }
+
+    .ride-details {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    .log {
+      font-family: monospace;
+      font-size: 12px;
+      background: #1e293b;
+      color: #38bdf8;
+      padding: 12px;
+      border-radius: 8px;
+      height: 120px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard">
+    <!-- Header / Duty Status -->
+    <div class="card header">
+      <div>
+        <h3>Driver Status</h3>
+        <span id="statusText" style="color: #6b7280; font-size: 14px;">Offline</span>
+      </div>
+      <div class="status-toggle">
+        <label class="switch">
+          <input type="checkbox" id="dutyToggle" onchange="toggleDuty()">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Active Trip Card -->
+    <div class="card">
+      <h3>Current Assignment</h3>
+      <div class="ride-details" id="tripInfo">
+        <div class="detail-item"><strong>Passenger:</strong> <span id="passengerName">--</span></div>
+        <div class="detail-item"><strong>Pickup:</strong> <span id="pickupLoc">--</span></div>
+        <div class="detail-item"><strong>Dropoff:</strong> <span id="dropLoc">--</span></div>
+        <div class="detail-item"><strong>Fare:</strong> <span id="fareAmount">--</span></div>
+      </div>
+
+      <button id="actionBtn" class="btn btn-primary" onclick="handleTripAction()" disabled>Waiting for Request...</button>
+    </div>
+
+    <!-- Live Telemetry / GPS Log -->
+    <div class="card">
+      <h3>System & GPS Log</h3>
+      <div class="log" id="sysLog">> System initialized. Go online to receive rides.<br></div>
+    </div>
+  </div>
+
+  <script>
+    // State management
+    const state = {
+      isOnline: false,
+      tripState: 'IDLE', // IDLE, OFFERED, ACCEPTED, IN_PROGRESS
+      watchId: null,
+      currentTrip: null
+    };
+
+    // DOM Elements
+    const dutyToggle = document.getElementById('dutyToggle');
+    const statusText = document.getElementById('statusText');
+    const actionBtn = document.getElementById('actionBtn');
+    const sysLog = document.getElementById('sysLog');
+
+    function log(message) {
+      const time = new Date().toLocaleTimeString();
+      sysLog.innerHTML += `[${time}] ${message}<br>`;
+      sysLog.scrollTop = sysLog.scrollHeight;
+    }
+
+    function toggleDuty() {
+      state.isOnline = dutyToggle.checked;
+      
+      if (state.isOnline) {
+        statusText.textContent = 'Online & Searching';
+        statusText.style.color = 'var(--success)';
+        log('Driver went ONLINE.');
+        startGPSWatch();
+        simulateIncomingRequest();
+      } else {
+        statusText.textContent = 'Offline';
+        statusText.style.color = '#6b7280';
+        log('Driver went OFFLINE.');
+        stopGPSWatch();
+        resetTripState();
+      }
+    }
+
+    // Geolocation API Integration
+    function startGPSWatch() {
+      if ('geolocation' in navigator) {
+        state.watchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            const { latitude, longitude, speed } = pos.coords;
+            log(`GPS Update: ${latitude.toFixed(4)}, ${longitude.toFixed(4)} | Speed: ${speed || 0} m/s`);
+          },
+          (err) => log(`GPS Error: ${err.message}`),
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+      } else {
+        log('Geolocation is not supported by this browser.');
+      }
+    }
+
+    function stopGPSWatch() {
+      if (state.watchId !== null) {
+        navigator.geolocation.clearWatch(state.watchId);
+        state.watchId = null;
+        log('GPS Tracking stopped.');
+      }
+    }
+
+    // Mock Ride Request Simulation
+    function simulateIncomingRequest() {
+      if (!state.isOnline || state.tripState !== 'IDLE') return;
+
+      log('Searching for nearby rides...');
+      setTimeout(() => {
+        if (!state.isOnline) return;
+
+        state.currentTrip = {
+          passenger: 'Jane Doe',
+          pickup: '123 Main St',
+          dropoff: '456 Market St',
+          fare: '$18.50'
+        };
+
+        document.getElementById('passengerName').textContent = state.currentTrip.passenger;
+        document.getElementById('pickupLoc').textContent = state.currentTrip.pickup;
+        document.getElementById('dropLoc').textContent = state.currentTrip.dropoff;
+        document.getElementById('fareAmount').textContent = state.currentTrip.fare;
+
+        state.tripState = 'OFFERED';
+        actionBtn.textContent = 'Accept Ride Request';
+        actionBtn.className = 'btn btn-success';
+        actionBtn.disabled = false;
+        log('New ride request received!');
+      }, 3000);
+    }
+
+    // Trip Lifecycle State Machine
+    function handleTripAction() {
+      switch (state.tripState) {
+        case 'OFFERED':
+          state.tripState = 'ACCEPTED';
+          actionBtn.textContent = 'Start Trip (Arrived at Pickup)';
+          actionBtn.className = 'btn btn-primary';
+          log('Ride ACCEPTED. Navigating to pickup.');
+          break;
+
+        case 'ACCEPTED':
+          state.tripState = 'IN_PROGRESS';
+          actionBtn.textContent = 'Complete Trip';
+          actionBtn.className = 'btn btn-danger';
+          log('Trip STARTED. Driving to destination.');
+          break;
+
+        case 'IN_PROGRESS':
+          log(`Trip COMPLETED. Collected ${state.currentTrip.fare}.`);
+          resetTripState();
+          if (state.isOnline) {
+            simulateIncomingRequest();
+          }
+          break;
+      }
+    }
+
+    function resetTripState() {
+      state.tripState = 'IDLE';
+      state.currentTrip = null;
+      document.getElementById('passengerName').textContent = '--';
+      document.getElementById('pickupLoc').textContent = '--';
+      document.getElementById('dropLoc').textContent = '--';
+      document.getElementById('fareAmount').textContent = '--';
+      actionBtn.textContent = state.isOnline ? 'Waiting for Request...' : 'Go Online to Start';
+      actionBtn.className = 'btn btn-primary';
+      actionBtn.disabled = true;
+    }
+  </script>
+</body>
+  </html>
+  
