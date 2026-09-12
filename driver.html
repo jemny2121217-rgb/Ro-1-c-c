@@ -1,1 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rydo Driver</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top right, rgba(0, 170, 255, .18), transparent 35%),
+        linear-gradient(145deg, #07111f, #0d1d30 55%, #06101c);
+      color: #fff;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      background: rgba(5, 15, 27, .88);
+      backdrop-filter: blur(14px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: .5px;
+    }
+
+    .brand span {
+      color: #35b8ff;
+    }
+
+    .status-pill {
+      padding: 7px 11px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #263342;
+      color: #cbd5e1;
+    }
+
+    .status-pill.online {
+      background: rgba(34,197,94,.15);
+      color: #4ade80;
+      border: 1px solid rgba(74,222,128,.3);
+    }
+
+    .container {
+      width: min(100%, 900px);
+      margin: auto;
+      padding: 18px;
+    }
+
+    .card {
+      background: rgba(15, 31, 49, .88);
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 15px 40px rgba(0,0,0,.2);
+    }
+
+    .auth-card {
+      max-width: 470px;
+      margin: 35px auto;
+    }
+
+    h1 {
+      font-size: 29px;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    h3 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .muted {
+      color: #9fb0c3;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      font-size: 13px;
+      color: #c9d6e5;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      height: 48px;
+      border-radius: 11px;
+      border: 1px solid #33465c;
+      background: #091624;
+      color: white;
+      outline: none;
+      padding: 0 13px;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #35b8ff;
+    }
+
+    .btn {
+      width: 100%;
+      min-height: 46px;
+      border: 0;
+      border-radius: 11px;
+      padding: 11px 14px;
+      font-weight: 800;
+      transition: .15s;
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .primary {
+      background: #20a9f5;
+      color: #04101b;
+    }
+
+    .success {
+      background: #22c55e;
+      color: #04120a;
+    }
+
+    .danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .secondary {
+      background: #26384c;
+      color: white;
+    }
+
+    .outline {
+      background: transparent;
+      color: #8bd7ff;
+      border: 1px solid #2c8dbb;
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .switch {
+      position: relative;
+      width: 54px;
+      height: 30px;
+      flex: 0 0 auto;
+    }
+
+    .switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      border-radius: 30px;
+      background: #344354;
+      transition: .2s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      left: 4px;
+      top: 4px;
+      border-radius: 50%;
+      background: white;
+      transition: .2s;
+    }
+
+    .switch input:checked + .slider {
+      background: #16a34a;
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .welcome {
+      margin-bottom: 15px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.06);
+    }
+
+    .stat small {
+      display: block;
+      color: #91a4b8;
+      margin-bottom: 6px;
+    }
+
+    .stat strong {
+      font-size: 19px;
+    }
+
+    .ride-card {
+      padding: 16px;
+      border-radius: 15px;
+      background: #0a1928;
+      border: 1px solid #263b50;
+      margin-top: 12px;
+    }
+
+    .ride-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .fare {
+      color: #62d0ff;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .location {
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 9px;
+      background: rgba(255,255,255,.035);
+      color: #d7e3ee;
+      line-height: 1.45;
+    }
+
+    .location b {
+      color: #7fcfff;
+    }
+
+    .meta {
+      color: #91a5b9;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 28px 10px;
+      color: #8296aa;
+    }
+
+    .message {
+      display: none;
+      padding: 11px 13px;
+      border-radius: 10px;
+      margin-top: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .message.error {
+      display: block;
+      background: rgba(239,68,68,.12);
+      border: 1px solid rgba(239,68,68,.3);
+      color: #fca5a5;
+    }
+
+    .message.success-msg {
+      display: block;
+      background: rgba(34,197,94,.12);
+      border: 1px solid rgba(34,197,94,.3);
+      color: #86efac;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+
+    .tab {
+      white-space: nowrap;
+      border: 1px solid #304459;
+      background: #112337;
+      color: #b9c9d8;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+    }
+
+    .tab.active {
+      background: #20a9f5;
+      color: #03101a;
+      border-color: #20a9f5;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .loading {
+      opacity: .65;
+      pointer-events: none;
+    }
+
+    .small {
+      font-size: 12px;
+    }
+
+    @media (max-width: 550px) {
+      .container {
+        padding: 12px;
+      }
+
+      .card {
+        padding: 16px;
+        border-radius: 15px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-row {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <header class="topbar">
+    <div class="brand">R<span>y</span>do Driver</div>
+    <div id="connectionStatus" class="status-pill">Connecting...</div>
+  </header>
+
+  <!-- AUTH -->
+  <main id="authScreen" class="container">
+
+    <section class="card auth-card">
+
+      <h1 id="authTitle">Driver Login</h1>
+      <p class="muted" id="authSubtitle">
+        Sign in to your Rydo driver account.
+      </p>
+
+      <div id="authMessage" class="message"></div>
+
+      <div id="registerFields" class="hidden">
+
+        <label for="regName">Full Name</label>
+        <input id="regName" type="text" placeholder="Your full name">
+
+        <label for="regPhone">Phone Number</label>
+        <input id="regPhone" type="tel" placeholder="98XXXXXXXX">
+
+        <label for="regLicense">Driver License Number</label>
+        <input id="regLicense" type="text" placeholder="License number">
+
+        <label for="regVehicle">Vehicle Type</label>
+        <select id="regVehicle">
+          <option value="Bike">Bike</option>
+          <option value="Car">Car</option>
+          <option value="Tuk Tuk">Tuk Tuk</option>
+        </select>
+
+        <label for="regVehicleNumber">Vehicle Number</label>
+        <input id="regVehicleNumber" type="text" placeholder="Vehicle number">
+
+        <label for="regVehicleModel">Vehicle Model</label>
+        <input id="regVehicleModel" type="text" placeholder="Example: Honda Dio">
+
+      </div>
+
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" placeholder="driver@example.com">
+
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="Minimum 6 characters">
+
+      <button id="authButton" class="btn primary" style="margin-top:18px;">
+        Login
+      </button>
+
+      <button id="toggleAuth" class="btn outline" style="margin-top:10px;">
+        Create Driver Account
+      </button>
+
+    </section>
+
+  </main>
+
+
+  <!-- DASHBOARD -->
+  <main id="dashboard" class="container dashboard">
+
+    <section class="welcome">
+      <h1>Driver Dashboard</h1>
+      <p class="muted">
+        Welcome, <strong id="driverName">Driver</strong>
+      </p>
+    </section>
+
+    <section class="card">
+
+      <div class="switch-row">
+
+        <div>
+          <h3 id="onlineTitle">You're Offline</h3>
+          <p class="muted" id="onlineDescription">
+            Go online to receive ride requests.
+          </p>
+        </div>
+
+        <label class="switch">
+          <input id="onlineSwitch" type="checkbox">
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+    </section>
+
+
+    <section class="stats">
+
+      <div class="stat">
+        <small>Completed Rides</small>
+        <strong id="completedCount">0</strong>
+      </div>
+
+      <div class="stat">
+        <small>Total Earnings</small>
+        <strong>Rs. <span id="totalEarnings">0</span></strong>
+      </div>
+
+      <div class="stat">
+        <small>Current Ride</small>
+        <strong id="currentRideText">None</strong>
+      </div>
+
+    </section>
+
+
+    <div class="tabs" style="margin-top:18px;">
+      <button class="tab active" data-tab="requests">Ride Requests</button>
+      <button class="tab" data-tab="current">Current Ride</button>
+      <button class="tab" data-tab="history">History</button>
+      <button class="tab" data-tab="profile">Profile</button>
+    </div>
+
+
+    <!-- REQUESTS -->
+    <section id="requestsTab" class="card">
+
+      <h2>Available Ride Requests</h2>
+
+      <p class="muted">
+        When you're online, new passenger requests will appear here.
+      </p>
+
+      <div id="requestsList">
+        <div class="empty">
+          Go online to receive ride requests.
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- CURRENT -->
+    <section id="currentTab" class="card hidden">
+
+      <h2>Current Ride</h2>
+
+      <div id="currentRide">
+        <div class="empty">
+          You don't have an active ride.
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- HISTORY -->
+    <section id="historyTab" class="card hidden">
+
+      <h2>Ride History</h2>
+
+      <div id="historyList">
+        <div class="empty">Loading history...</div>
+      </div>
+
+    </section>
+
+
+    <!-- PROFILE -->
+    <section id="profileTab" class="card hidden">
+
+      <h2>Driver Profile</h2>
+
+      <div id="profileInfo"></div>
+
+      <button id="logoutButton" class="btn danger" style="margin-top:18px;">
+        Logout
+      </button>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script>
+"use strict";
+
+/* ============================================================
+   RYDO SUPABASE CONFIG
+   ============================================================ */
+
+const SUPABASE_URL =
+  "https://pdfgqlvovmyzhdnumypq.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_cZnuDJwbDbtF2dDJ_M6rCg_-e-nWdMX";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+let currentUser = null;
+let currentProfile = null;
+let currentRide = null;
+let isRegisterMode = false;
+let rideTimer = null;
+
+
+/* ============================================================
+   ELEMENTS
+   ============================================================ */
+
+const authScreen = document.getElementById("authScreen");
+const dashboard = document.getElementById("dashboard");
+
+const authTitle = document.getElementById("authTitle");
+const authSubtitle = document.getElementById("authSubtitle");
+const authButton = document.getElementById("authButton");
+const toggleAuth = document.getElementById("toggleAuth");
+const registerFields = document.getElementById("registerFields");
+const authMessage = document.getElementById("authMessage");
+
+const connectionStatus =
+  document.getElementById("connectionStatus");
+
+const onlineSwitch =
+  document.getElementById("onlineSwitch");
+
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+
+function showMessage(message, type = "error") {
+  authMessage.textContent = message;
+  authMessage.className =
+    "message " +
+    (type === "success" ? "success-msg" : "error");
+}
+
+function clearMessage() {
+  authMessage.textContent = "";
+  authMessage.className = "message";
+}
+
+function escapeHTML(value) {
+  if (value === null || value === undefined) return "";
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function money(value) {
+  const number = Number(value || 0);
+
+  return number.toLocaleString("en-IN", {
+    maximumFractionDigits: 0
+  });
+}
+
+function formatDate(date) {
+  if (!date) return "";
+
+  try {
+    return new Date(date).toLocaleString();
+  } catch {
+    return "";
+  }
+}
+
+
+/* ============================================================
+   CONNECTION TEST
+   ============================================================ */
+
+async function testConnection() {
+
+  try {
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("profiles")
+      .select("id")
+      .limit(1);
+
+    if (error) {
+      connectionStatus.textContent = "Database Error";
+      connectionStatus.classList.remove("online");
+      console.error(error);
+      return false;
+    }
+
+    connectionStatus.textContent = "Connected";
+    connectionStatus.classList.add("online");
+
+    return true;
+
+  } catch (error) {
+
+    connectionStatus.textContent = "Connection Error";
+    console.error(error);
+
+    return false;
+  }
+}
+
+
+/* ============================================================
+   AUTH MODE
+   ============================================================ */
+
+toggleAuth.addEventListener("click", () => {
+
+  isRegisterMode = !isRegisterMode;
+
+  clearMessage();
+
+  if (isRegisterMode) {
+
+    authTitle.textContent = "Driver Registration";
+
+    authSubtitle.textContent =
+      "Create your Rydo driver account.";
+
+    authButton.textContent = "Register Driver";
+
+    toggleAuth.textContent =
+      "Already have an account? Login";
+
+    registerFields.classList.remove("hidden");
+
+  } else {
+
+    authTitle.textContent = "Driver Login";
+
+    authSubtitle.textContent =
+      "Sign in to your Rydo driver account.";
+
+    authButton.textContent = "Login";
+
+    toggleAuth.textContent =
+      "Create Driver Account";
+
+    registerFields.classList.add("hidden");
+  }
+
+});
+
+
+/* ============================================================
+   LOGIN / REGISTER
+   ============================================================ */
+
+authButton.addEventListener("click", async () => {
+
+  clearMessage();
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  if (!email || !password) {
+    showMessage("Please enter email and password.");
+    return;
+  }
+
+  if (password.length < 6) {
+    showMessage("Password must contain at least 6 characters.");
+    return;
+  }
+
+  authButton.classList.add("loading");
+
+  try {
+
+    if (isRegisterMode) {
+
+      await registerDriver(email, password);
+
+    } else {
+
+      await loginDriver(email, password);
+
+    }
+
+  } finally {
+
+    authButton.classList.remove("loading");
+  }
+
+});
+
+
+/* ============================================================
+   REGISTER
+   ============================================================ */
+
+async function registerDriver(email, password) {
+
+  const name =
+    document.getElementById("regName").value.trim();
+
+  const phone =
+    document.getElementById("regPhone").value.trim();
+
+  const license =
+    document.getElementById("regLicense").value.trim();
+
+  const vehicleType =
+    document.getElementById("regVehicle").value;
+
+  const vehicleNumber =
+    document.getElementById("regVehicleNumber").value.trim();
+
+  const vehicleModel =
+    document.getElementById("regVehicleModel").value.trim();
+
+
+  if (!name || !phone || !license) {
+
+    showMessage(
+      "Full name, phone number and driver license are required."
+    );
+
+    return;
+  }
+
+
+  if (!vehicleNumber || !vehicleModel) {
+
+    showMessage(
+      "Vehicle number and vehicle model are required."
+    );
+
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient.auth.signUp({
+
+    email,
+    password,
+
+    options: {
+      data: {
+        full_name: name,
+        phone: phone,
+        role: "driver",
+        driver_license: license,
+        vehicle_type: vehicleType,
+        vehicle_number: vehicleNumber,
+        vehicle_model: vehicleModel
+      }
+    }
+
+  });
+
+
+  if (error) {
+
+    showMessage(error.message);
+
+    return;
+  }
+
+
+  if (!data.user) {
+
+    showMessage(
+      "Registration did not create an account.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  /*
+    Create the driver's profile.
+  */
+
+  const {
+    error: profileError
+  } = await supabaseClient
+    .from("profiles")
+    .upsert({
+      id: data.user.id,
+      full_name: name,
+      phone: phone,
+      role: "driver",
+      is_online: false,
+      is_verified: false
+    });
+
+
+  if (profileError) {
+
+    console.error(profileError);
+
+    /*
+      Auth metadata still contains the registration data.
+      The user can retry/login after correcting RLS if needed.
+    */
+  }
+
+
+  /*
+    Register vehicle.
+  */
+
+  const {
+    error: vehicleError
+  } = await supabaseClient
+    .from("vehicles")
+    .insert({
+      driver_id: data.user.id,
+      vehicle_type: vehicleType,
+      vehicle_number: vehicleNumber,
+      model: vehicleModel
+    });
+
+
+  if (vehicleError) {
+
+    console.error(vehicleError);
+
+    showMessage(
+      "Account created. Vehicle registration needs database permission or admin approval.",
+      "success"
+    );
+
+  } else {
+
+    showMessage(
+      "Account created successfully. Check your email if confirmation is required, then login.",
+      "success"
+    );
+  }
+
+}
+
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+
+async function loginDriver(email, password) {
+
+  const {
+    data,
+    error
+  } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+
+  if (error) {
+
+    showMessage(error.message);
+
+    return;
+  }
+
+
+  if (!data.user) {
+
+    showMessage("Login failed.");
+
+    return;
+  }
+
+
+  await loadDriver(data.user);
+}
+
+
+/* ============================================================
+   LOAD DRIVER
+   ============================================================ */
+
+async function loadDriver(user) {
+
+  currentUser = user;
+
+
+  const {
+    data: profile,
+    error
+  } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+
+  if (error) {
+
+    console.error(error);
+
+    /*
+      If profile is unavailable because RLS blocks it,
+      still use Auth metadata.
+    */
+
+    currentProfile = {
+      id: user.id,
+      full_name:
+        user.user_metadata?.full_name || "Drive
